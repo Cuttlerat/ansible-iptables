@@ -1,0 +1,27 @@
+---
+- name: Set custom iptables rules
+  iptables_raw:
+    name: 'iptables_custom_rules_{{ item.name }}'
+    rules: '{{ item.rules }}'
+    state: '{{ item.state }}'
+    weight: '{{ item.weight|default(omit) }}'
+    table: '{{ item.table|default(omit) }}'
+  with_items: '{{ iptables_custom_rules }}'
+
+- name: Set default iptables head rules
+  iptables_raw:
+    name: iptables_default_head
+    weight: 10
+    keep_unmanaged: '{{ iptables_keep_unmanaged }}'
+    state: present
+    rules: '{{ iptables_default_head }}'
+  when: iptables_default_head is defined
+
+- name: Set default iptables tail rules
+  iptables_raw:
+    name: iptables_default_tail
+    weight: 99
+    keep_unmanaged: '{{ iptables_keep_unmanaged }}'
+    state: '{{ (iptables_default_tail != "" ) | ternary("present", "absent") }}'
+    rules: '{{ iptables_default_tail }}'
+  when: iptables_default_tail is defined
