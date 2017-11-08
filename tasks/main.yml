@@ -1,4 +1,28 @@
 ---
+- name: Open tcp ports
+  iptables_raw:
+    name: "iptables_open_tcp_port_{{ item }}"
+    rules: |
+      -A INPUT -p tcp -m tcp --dport {{ item }} -j ACCEPT
+    state: present
+    weight: 40
+    ipversion: 4
+    table: filter
+  with_items: "{{ tcp_ports_to_open }}"
+  when: tcp_ports_to_open is defined
+
+- name: Open udp ports
+  iptables_raw:
+    name: "iptables_open_udp_port_{{ item }}"
+    rules: |
+      -A INPUT -p tcp -m udp --dport {{ item }} -j ACCEPT
+    state: present
+    weight: 40
+    ipversion: 4
+    table: filter
+  with_items: "{{ udp_ports_to_open }}"
+  when: udp_ports_to_open is defined
+
 - name: Set custom iptables rules
   iptables_raw:
     name: 'iptables_custom_rules_{{ item.name }}'
