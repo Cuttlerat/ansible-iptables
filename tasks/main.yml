@@ -31,6 +31,7 @@
     weight: '{{ item.weight|default(omit) }}'
     table: '{{ item.table|default(omit) }}'
   with_items: '{{ iptables_custom_rules }}'
+  when: iptables_custom_rules is defined
 
 - name: Set default iptables head rules
   iptables_raw:
